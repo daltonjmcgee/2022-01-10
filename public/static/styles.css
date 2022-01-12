@@ -3,5 +3,6 @@ html, body {
 }
 
 h1 {
-  color: red;
+  font-size: 3rem;
+  color: blue;
 }

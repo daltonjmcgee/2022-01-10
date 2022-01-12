@@ -33,11 +33,17 @@ func handleUri(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, fileData)
 }
 
+func h2(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	if path != "/static/" {
+		http.ServeFile(w, r, "./public"+path)
+	} else {
+		http.NotFound(w, r)
+	}
+}
+
 func main() {
 	http.HandleFunc("/", handleUri)
-
-	fs := http.FileServer(http.Dir("./public/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
+	http.HandleFunc("/static/", h2)
 	log.Fatal(http.ListenAndServe(":3010", nil))
 }
