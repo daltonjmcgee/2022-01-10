@@ -2,46 +2,42 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 )
 
 func loadFile(fileName string) (string, error) {
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return "", err
+		return "File not found", err
+	} else {
+		return string(bytes), err
 	}
-	return string(bytes), nil
 }
 
-func uriHandler(res http.ResponseWriter, req *http.Request) {
-	requestUri := req.URL.Path
-	if requestUri == "/" {
-		requestUri = "./public/index.html"
-	} else {
-		requestUri = fmt.Sprintf("./public/%s.html", requestUri)
-	}
-
-	if req.Method == "GET" {
-		requestedFile, err := loadFile(requestUri)
-		if err != nil {
-			res.WriteHeader(http.StatusNotFound)
-			requestedFile, err := loadFile("./public/404.html")
-			if err != nil {
-				fmt.Fprintf(res, "Some dipshit didn't include a 404 page. Either way, your page wasn't found.")
-			}
-			fmt.Fprintf(res, requestedFile)
+func handleUri(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	var fileData string
+	if strings.Index(path, "/static/") != 0 {
+		if path == "/" {
+			data, _ := loadFile("./public/index.html")
+			fileData = data
 		} else {
-			res.WriteHeader(http.StatusAccepted)
-			fmt.Fprintf(res, requestedFile)
+			data, _ := loadFile(fmt.Sprintf("./public%s.html", path))
+			fileData = data
 		}
-	} else {
-		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(res, "%s is not an accepted Method", req.Method)
 	}
+	io.WriteString(w, fileData)
 }
 
 func main() {
-	http.HandleFunc("/", uriHandler)
-	http.ListenAndServe(":3010", nil)
+	http.HandleFunc("/", handleUri)
+
+	fs := http.FileServer(http.Dir("./public/static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	log.Fatal(http.ListenAndServe(":3010", nil))
 }
