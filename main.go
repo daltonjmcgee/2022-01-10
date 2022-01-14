@@ -29,12 +29,10 @@ func handleUri(w http.ResponseWriter, r *http.Request) {
 	if strings.Index(path, "/static/") != 0 {
 		if path == "/" {
 			files := append([]string{"./public/index.html"}, templateHome)
-			fmt.Println(files)
 			t, _ := template.ParseFiles(files...)
-			t.Execute(w, "Golang HTTP Server Example")
+			t.Execute(w, nil)
 		} else {
 			files := append([]string{fmt.Sprintf("./public%s.html", path)}, templateHome)
-			fmt.Println(files)
 			t, _ := template.ParseFiles(files...)
 			t.Execute(w, nil)
 		}
