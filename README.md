@@ -10,3 +10,4 @@ This project comes out of my interest in building a super-light HTTP Server that
 
 ### Features
 - URL -> `public/[filename].[html]` mapping. If you go to `website.com/hello` you'll be served the file from `./public/hello.html`. This works with subdirectories as well, e.g. `website.com/pages/hello` will serve `./public/pages/hello.html`.
+- Static files being served from the /static/ folder. 
