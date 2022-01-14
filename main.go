@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -19,15 +20,23 @@ func loadFile(fileName string) (string, error) {
 }
 
 func handleUri(w http.ResponseWriter, r *http.Request) {
+	type IndexData struct {
+		Title string
+	}
 	path := r.URL.Path
 	var fileData string
+	templateHome := "./templates/home.html"
 	if strings.Index(path, "/static/") != 0 {
 		if path == "/" {
-			data, _ := loadFile("./public/index.html")
-			fileData = data
+			files := append([]string{"./public/index.html"}, templateHome)
+			fmt.Println(files)
+			t, _ := template.ParseFiles(files...)
+			t.Execute(w, "Golang HTTP Server Example")
 		} else {
-			data, _ := loadFile(fmt.Sprintf("./public%s.html", path))
-			fileData = data
+			files := append([]string{fmt.Sprintf("./public%s.html", path)}, templateHome)
+			fmt.Println(files)
+			t, _ := template.ParseFiles(files...)
+			t.Execute(w, nil)
 		}
 	}
 	io.WriteString(w, fileData)
