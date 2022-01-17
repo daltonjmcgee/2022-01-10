@@ -94,7 +94,6 @@ func handleUri(w http.ResponseWriter, r *http.Request) {
 										fullDirectory := fmt.Sprintf("./public%s/%s", directory, file.Name())
 										files := append([]string{fullDirectory}, templateHome)
 										t, _ := template.ParseFiles(files...)
-										fmt.Println(val)
 										t.Execute(w, val)
 										return
 									}
