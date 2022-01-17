@@ -1,0 +1,6 @@
+{{ template "layout" . }}
+{{ block "title" nil }}ID: {{.Title}}{{ end }}
+{{ block "content" nil }}
+<h1>Blog: {{.Title}}</h1>
+<h2>Content: {{.Body}}</h2>
+{{ end }}
